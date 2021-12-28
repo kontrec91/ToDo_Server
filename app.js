@@ -53,15 +53,18 @@
 //   });
 // }).listen(27017);
 
-const http = require("http");
-const mongoClient = require("mongodb").MongoClient;
-const bodyParser = require('body-parser')
+// import { createDB, getRequest } from "./db.js";
+import { getRequest } from "./db.js";
+
+import * as http from 'http';
+import bodyParser from "body-parser";
+
+// const http = require("http");
+// const mongoClient = require("mongodb").MongoClient;
+// const bodyParser = require("body-parser");
 
 const hostname = "127.0.0.1";
 const port = 3000;
-
-const dbName = "ToDoDatabase";
-const uri = `mongodb://127.0.0.1:27017/${dbName}`;
 
 const arr = [];
 
@@ -79,52 +82,24 @@ const server = http.createServer((request, response) => {
   response.setHeader("Access-Control-Allow-Credentials", true);
 
   let body = "";
-  let colletction = "ToDoCollectionTodos";
+  let collection = "ToDoCollectionTodos";
 
-  mongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
-    
-    const db = client.db(dbName);
+  // createDB();
 
-      console.log("client", client);
       if (request.method === "POST") {
         request.on("data", (chunk) => {
           console.log("chunk: ", request);
           body += chunk;
-          // arr.push(body);
-          // response.end(JSON.stringify(arr));
-          // body = JSON.stringify(body);
-          // body = JSON.parse(body);
-          // db.collection("ToDoCollectionTodos").insertOne({
-          //   userId: "61c594077d2d60c58c71336a",
-          //   value: "hello world",
-          //   isChecked: false,
-          // });
           console.log(typeof body);
-          db.collection(colletction).insertOne(JSON.parse(body));
+          // db.collection(collection).insertOne(JSON.parse(body));
+          getRequest(body, collection);
           response.end(JSON.stringify(body));
         });
       } else if (request.method === "GET") {
-        // request.on('data', (chunk) => {
-          // body = Buffer.concat(body).toString();
-          response.end(body);
-        // });
-      } else if (request.method === "DELETE") {}
-
-      if (err) {
-        console.log("can not connect to database");
       }
 
-      // const db = client.db(dbName);
-
-      // db.collection('ToDoCollectionTodos').insertOne({
-      //     value: 'Todo',
-      //     id: 1,
-      //     checked: false
-      // })
-
       console.log("nice");
-    }
-  );
+
 });
 
 server.listen(port, hostname, () => {

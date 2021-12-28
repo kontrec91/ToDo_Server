@@ -1,88 +1,34 @@
-// const MongoClient = require("mongodb").MongoClient;
+import * as mongodb from "mongodb";
 
-// // создаем объект MongoClient и передаем ему строку подключения
-// const mongoClient = new MongoClient("mongodb://127.0.0.1:27017/");
-// mongoClient.connect(function (err, client) {
-//   if (err) {
-//     return console.log(err);
-//   }
-//   // взаимодействие с базой данных
-//   client.close();
-// });
-// // "proxy": "http://127.0.0.1:3000/",
-// // "Access-Control-Allow-Origin": "http://127.0.0.1:3000/",
+// export function createDB() {
+  const dbName = "ToDoDatabase";
+  const uri = `mongodb://127.0.0.1:27017/${dbName}`;
 
-// const MongoClient = require("mongodb").MongoClient;
-
-// const url = "mongodb://localhost:27017/";
-// const mongoClient = new MongoClient(url);
-
-// // const db = client.db("ToDoDatabase");
-
-// // Подключаемся к серверу
-// mongoClient.connect(function(err, client){
-//        debugger
-//   // обращаемся к базе данных admin
-//   const db = client.db("admin");
-//   // const db = client.db("ToDoDatabase");
-
-//   db.command({ping: 1}, function(err, result){
-//       if(!err){
-//           console.log("Подключение с сервером успешно установлено");
-//           console.log(result);
-//       }
-//       // Закрываем подключение
-//       // client.close();
-//       console.log("Подключение закрыто");
-//   });
-// });
-
-//добить подключение сервака как в ствтье https://metanit.com/web/nodejs/6.1.php
-//пересоздать базу данных(пересохранить)
-
-// const MongoClient = require("mongodb").MongoClient;
-
-// const url = "mongodb://localhost:27017/";
-// const mongoClient = new MongoClient(url);
-// async function run() {
-//   try {
-//     // Подключаемся к серверу
-//     await mongoClient.connect();
-//     // обращаемся к базе данных admin
-//     const db = mongoClient.db("admin");
-//     // выполняем пинг для проверки подключения
-//     const result = await db.command({ ping: 1 });
-//     console.log("Подключение с сервером успешно установлено");
-//     console.log(result);
-//   } catch (err) {
-//     console.log("Возникла ошибка");
-//     console.log(err);
-//   } finally {
-//     // Закрываем подключение при завершении работы или при ошибке
-//     // await mongoClient.close();
-//     console.log("Подключение закрыто");
-//   }
+  const mongoClient = mongodb.MongoClient;
 // }
-// run();
 
+export function getRequest(body, collection) {
+  mongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
+      const db = client.db(dbName);
 
+      console.log("client", client);
+      //   if (request.method === "POST") {
+      //     request.on("data", (chunk) => {
+      //       console.log("chunk: ", request);
+      //       body += chunk;
+      //       console.log(typeof body);
+      if (body !== "") {
+        db.collection(collection).insertOne(JSON.parse(body));
+      }
+      //       response.end(JSON.stringify(body));
+      //     });
+      //   } else if (request.method === "GET") {
+      //   }
 
-// export const MongoClient = require("mongodb").MongoClient;
-    
-// const url = "mongodb://localhost:27017/";
-// const mongoClient = new MongoClient(url);
- 
-// async function run() {
-//     try {
-//         await mongoClient.connect();
-//         const db = mongoClient.db("ToDoDatabase");
-//         const collection = db.collection("ToDoCollectionUser");
-//         const count = await collection.countDocuments();
-//         console.log(`В коллекции users ${count} документов`);
-//     }catch(err) {
-//         console.log(err);
-//     } finally {
-//         await mongoClient.close();
-//     }
-// }
-// run();
+      if (err) {
+        console.log("can not connect to database");
+      }
+      console.log("nice");
+    }
+  );
+}
